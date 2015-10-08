@@ -27,14 +27,14 @@ module.exports = generators.Base.extend({
     },
     git: function() {
       this.fs.copy(
-        this.templatePath('gitignore'),
+        this.templatePath('.gitignore'),
         this.destinationPath('.gitignore')
       );
     },
     styles: function() {
       this.fs.copy(
-        this.templatePath('screen.sass'),
-        this.destinationPath('src/styles/screen.sass')
+        this.templatePath('main.css'),
+        this.destinationPath('src/styles/main.css')
       );
     },
     scripts: function() {
@@ -75,11 +75,12 @@ module.exports = generators.Base.extend({
       }
     );
 
-    this.npmInstall(['normalize.css', 'jquery', 'underscore', 'backbone'], { 'save': true }); //add
+    this.npmInstall(['normalize.css', 'jquery' , 'underscore', 'backbone'], { 'save': true });
   },
 
   end: function() {
     this.spawnCommandSync('git', ['init']);
+    this.spawnCommandSync('hub', ['create']);
     this.spawnCommandSync('git', ['add', '--all']);
     this.spawnCommandSync('git', ['commit', '-m', '"Init"']);
   }

@@ -46,10 +46,10 @@ gulp.task('script', () => {
 });
 
 gulp.task('styles', () => {
-  gulp.src('src/styles/**/*.{css}')
+  gulp.src('src/styles/**/*.css')
     .pipe(sass({
       includePaths: ['node_modules']
-    }).on('error', css.logError))
+    }).on('error', sass.logError))
     .pipe(gulp.dest('dist'))
     .pipe(sync.reload({
       stream: true
@@ -69,7 +69,7 @@ gulp.task('serve', ['build'], () => {
   });
 
   gulp.watch('src/**/*.{html,jade}', ['html']);
-  gulp.watch('src/**/*.{css}', ['styles']);
+  gulp.watch('src/**/*.css', ['styles']);
   gulp.watch('src/**/*.js', ['script'])
 });
 
