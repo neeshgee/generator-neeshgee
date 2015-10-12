@@ -61,7 +61,7 @@ module.exports = generators.Base.extend({
       'browser-sync',
       'browserify',
       'gulp',
-      'gulp-gh-pages',
+      'gh-pages',
       'gulp-sass',
       'vinyl-source-stream'
     ];
