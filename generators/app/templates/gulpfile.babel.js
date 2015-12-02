@@ -3,41 +3,33 @@ import babelify from 'babelify';
 import browserify from 'browserify';
 import source from 'vinyl-source-stream';
 import browserSync from 'browser-sync';
-import sass from 'gulp-sass';
-<% if (includeJade) { -%>
-import jade from 'gulp-jade';
-<% } -%>
+import less from 'gulp-less';
 import ghPages from 'gh-pages';
+import gutil from 'gulp-util';
 import path from 'path';
 
 const sync = browserSync.create();
 
 gulp.task('html', () => {
-  <% if (includeJade) { -%>
-  gulp.src('src/**/*.jade')
-    .pipe(jade())
+    gulp.src('src/**/*.html')
     .pipe(gulp.dest('dist'))
     .pipe(sync.reload({
       stream: true
     }));
-
-  <% } -%>
-  gulp.src('src/**/*.html')
-    .pipe(gulp.dest('dist'))
-    .pipe(sync.reload({
-      stream: true
-    }));
+     gulp.src('src/CNAME').pipe(gulp.dest('dist'))
 });
 
 gulp.task('script', () => {
   browserify({
-      entries: ['./src/scripts/main.js'],
-      extension: ['.js'],
+      entries: ['./src/scripts/main.jsx'],
+      extensions: ['.js', '.jsx'],
       debug: true
-    }).transform(babelify).bundle()
-    .on('error', function(err) {
-      console.log(err.toString());
-      this.emit("end");
+    }).transform(babelify.configure({
+      optional: ['es7.classProperties']
+    })).bundle()
+    .on('error', (error) => {
+      gutil.log(gutil.colors.red('Error: ' + error.message));
+      gutil.beep();
     })
     .pipe(source('bundle.js'))
     .pipe(gulp.dest('dist'))
@@ -47,17 +39,24 @@ gulp.task('script', () => {
 });
 
 gulp.task('styles', () => {
-  gulp.src('src/styles/**/*.css')
-    .pipe(sass({
-      includePaths: ['node_modules']
-    }).on('error', sass.logError))
+  gulp.src('src/styles/**/*.{css,less}')
+    .pipe(less()
+      .on('error', (error) => {
+        gutil.log(gutil.colors.red('Error: ' + error.message));
+        gutil.beep();
+      }))
     .pipe(gulp.dest('dist'))
     .pipe(sync.reload({
       stream: true
     }));
 });
 
-gulp.task('build', ['html', 'script', 'styles']);
+ gulp.task('images', () => {
+  gulp.src('src/styles/images/*')
+   .pipe(gulp.dest('dist/images'));
+});
+
+gulp.task('build', ['html', 'script', 'styles', 'images']);
 
 gulp.task("deploy", ["build"], function(cb) {
   ghPages.publish(path.join(process.cwd(), "dist"), cb);
@@ -69,8 +68,9 @@ gulp.task('serve', ['build'], () => {
   });
 
   gulp.watch('src/**/*.{html,jade}', ['html']);
-  gulp.watch('src/**/*.css', ['styles']);
-  gulp.watch('src/**/*.js', ['script'])
+  gulp.watch('src/**/*.{css,less}', ['styles']);
+  gulp.watch('src/**/*.{js,jsx}', ['script'])
+  gulp.watch('src/styles/images/**/*', ['images']);
 });
 
 gulp.task('default', ['serve']);

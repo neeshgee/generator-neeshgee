@@ -63,6 +63,9 @@ module.exports = generators.Base.extend({
       'gulp',
       'gh-pages',
       'gulp-sass',
+      'gulp-less',
+      'gulp-util',
+      'babel-preset-es2015',
       'vinyl-source-stream'
     ];
 
