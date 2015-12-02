@@ -31,6 +31,14 @@ module.exports = generators.Base.extend({
         this.destinationPath('.gitignore')
       );
     },
+
+    babel: function() {
+      this.fs.copy(
+        this.templatePath('.babelrc'),
+        this.destinationPath('.babelrc')
+      );
+    },
+
     styles: function() {
       this.fs.copy(
         this.templatePath('main.css'),
